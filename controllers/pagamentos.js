@@ -3,19 +3,22 @@ module.exports = function(app){
         console.log('Recebida requisição de teste')
         res.send('pagamentos');
     });
+    
+    // recurso
 
 
-    app.put('/pagamentos/pagamento/:id', function(req, res){
+
+    app.delete('/pagamentos/pagamento/:id', function(req, res){
 
         var pagamento = {};
+
         var id = req.params.id;
-        
+
         pagamento.id = id;
-        pagamento.status = 'CONFIRMADO';
-        
+        pagamento.status = 'CANCELADO';
+
         var connection = app.persistencia.connectionFactory();
         var pagamentoDao = new app.persistencia.PagamentoDao(connection);
-
 
         pagamentoDao.atualiza(pagamento, function(erro){
             if(erro){
@@ -23,17 +26,38 @@ module.exports = function(app){
                 return;
             }
 
-            res.send(pagamento);
-
-        });  
-        
+            console.log('Pagamento cancelado');
+            res.status(204).send(pagamento);
+        });
     });
 
+    app.put('/pagamentos/pagamento/:id', function(req, res){
 
+        var pagamento = {};
+
+        var id = req.params.id;
+
+        pagamento.id = id;
+        pagamento.status = 'CONFIRMADO';  
+
+        var connection = app.persistencia.connectionFactory();
+        var pagamentoDao = new app.persistencia.PagamentoDao(connection);
+
+        pagamentoDao.atualiza(pagamento, function(erro){
+            if(erro){
+                res.status(500).send(erro);
+                return;
+            }
+
+            console.log('Pagamento confirmado');
+            res.send(pagamento);
+        });
+
+    });
     app.post('/pagamentos/pagamento', function(req, res){
 
         req.assert('forma_de_pagamento', 'Forma de pagamento é obrigatório').notEmpty();
-        req.assert('valor', 'Valor é pbrogatório e deve ser um decimal').notEmpty().isFloat();
+        req.assert('valor', 'Valor é obrigatório e deve ser um decimal').notEmpty().isFloat();
 
         var erros = req.validationErrors();
         if(erros){
@@ -41,8 +65,7 @@ module.exports = function(app){
             res.status(400).send(erros);
             return;
         }
-
-        
+      
 
         var pagamento = req.body;
 
@@ -58,10 +81,31 @@ module.exports = function(app){
             if(erro){
                 console.log('Erro ao inserir no banco:' + erro);
                 res.status(500).send(erro);
-            }else{          
+            }else{  
+                
+                pagamento.id = resultado.insertId;
+                
                 console.log('pagamento criado');  
-                res.location('/pagamentos/pagamento/' + resultado.insertId);        
-                res.status(201).json(pagamento);
+                res.location('/pagamentos/pagamento/' + pagamento.id);   
+                
+                var response = {
+                    dados_do_pagamento: pagamento,
+                    links: [
+                        {
+                            href: "http://localhost:80/pagamentos/pagamento/" + pagamento.id, 
+                            rel: "confirmar",
+                            method: "PUT"
+                        },
+                        {
+                            href: "http://localhost:80/pagamentos/pagamento/" + pagamento.id,
+                            rel: "cancelar",
+                            method: "DELETE"
+                        }
+                    ]
+
+                };
+                
+                res.status(201).json(response);
             }    
         }); 
 
