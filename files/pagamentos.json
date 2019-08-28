@@ -1,6 +1,15 @@
 {
-    "forma_de_pagamento":"payfast",
-    "valor": 10.00,
-    "moeda":"USD",
-    "descricao":"criando um pagamento"
+    "pagamento": {
+        "forma_de_pagamento":"cartao",
+        "valor": 10.00,
+        "moeda":"USD",
+        "descricao":"criando um pagamento"
+    },
+    "cartao": {
+        "numero": 1234567890123456,
+        "bandeira": "master",
+        "ano_de_expiracao":2030,
+        "mes_de_expiracao": 7,
+        "cvv": 333
+    }
 }
