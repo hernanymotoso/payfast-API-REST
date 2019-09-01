@@ -66,6 +66,23 @@ module.exports = function(app){
             }
 
             console.log('Pagamento cancelado');
+
+            /*
+            var memcachedClient = app.servicos.memcachedCLient();
+            memcachedClient.set('pagamento-' + pagamento.id, pagamento, 60000, function(erro){
+                if(erro){
+                    console.log('Erro no memcachedCLient ' + erro); 
+                    res.status(400).send(erro);
+                    return; 
+                }
+                    
+                console.log('nova chave adicionada ao cache: pagamento-' + pagamento.id);
+
+            });  */
+
+
+
+
             res.status(204).send(pagamento);
         });
     });
@@ -89,6 +106,22 @@ module.exports = function(app){
             }
 
             console.log('Pagamento confirmado');
+
+ 
+            /*
+            var memcachedClient = app.servicos.memcachedCLient();
+            memcachedClient.set('pagamento-' + pagamento.id, pagamento, 60000, function(erro){
+                if(erro){
+                    console.log('Erro no memcachedCLient ' + erro); 
+                    res.status(400).send(erro);
+                    return; 
+                }
+                    
+                console.log('nova chave adicionada ao cache: pagamento-' + pagamento.id);
+
+            });  */
+
+
             res.send(pagamento);
         });
 
