@@ -1,3 +1,4 @@
+var logger = require('../servicos/logger.js');
 module.exports = function(app){
     app.get('/pagamentos', function(req, res){
         console.log('Recebida requisição de teste');
@@ -11,6 +12,7 @@ module.exports = function(app){
         var id = req.params.id;
 
         console.log('consultando pagamento ' + id);
+        logger.info('consultando pagamento ' + id);
 
         var memcachedClient = app.servicos.memcachedClient();
 
@@ -67,18 +69,18 @@ module.exports = function(app){
 
             console.log('Pagamento cancelado');
 
-            /*
+            
             var memcachedClient = app.servicos.memcachedCLient();
-            memcachedClient.set('pagamento-' + pagamento.id, pagamento, 60000, function(erro){
+            memcachedClient.set('pagamento-' + pagamento.id, pagamento.status, 60000, function(erro){
                 if(erro){
                     console.log('Erro no memcachedCLient ' + erro); 
                     res.status(400).send(erro);
                     return; 
                 }
                     
-                console.log('nova chave adicionada ao cache: pagamento-' + pagamento.id);
+                console.log('Pagamento-' + pagamento.id + 'cancelado do cache.');
 
-            });  */
+            });  
 
 
 
@@ -108,18 +110,18 @@ module.exports = function(app){
             console.log('Pagamento confirmado');
 
  
-            /*
+            
             var memcachedClient = app.servicos.memcachedCLient();
-            memcachedClient.set('pagamento-' + pagamento.id, pagamento, 60000, function(erro){
+            memcachedClient.set('pagamento-' + pagamento.id, pagamento.status, 60000, function(erro){
                 if(erro){
                     console.log('Erro no memcachedCLient ' + erro); 
                     res.status(400).send(erro);
                     return; 
                 }
                     
-                console.log('nova chave adicionada ao cache: pagamento-' + pagamento.id);
+                console.log('Pagamento-' + pagamento.id + 'atualizado');
 
-            });  */
+            });  
 
 
             res.send(pagamento);
